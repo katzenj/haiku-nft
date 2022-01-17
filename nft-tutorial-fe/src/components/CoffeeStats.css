@@ -1,0 +1,16 @@
+.coffee-stats-container {
+  margin-bottom: 16px;
+}
+
+.messages-title {
+  margin-bottom: 8px;
+}
+
+.cancel-button {
+  margin-left: 8px;
+  cursor: pointer;
+  background-color: unset;
+  border: unset;
+  color: white;
+  font-size: 18px;
+}

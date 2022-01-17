@@ -1,0 +1,4 @@
+export const INFURA_ID = "e69606221186406c9b3633ac3cb7e3ea";
+export const ALCHEMY_KEY = "UCS1l1rFW4wTZbmky4IAZ1H9rqiKByE_"
+export const CHAIN_ID = "4";
+export const CONTRACT_ADDRESS = "0xafF50e1dF0f034498B7c4B3Ed383E60DbAB75B9F";

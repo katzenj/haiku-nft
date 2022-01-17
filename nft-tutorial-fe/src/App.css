@@ -1,0 +1,26 @@
+.main-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 24px;
+}
+
+.data-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 480px;
+}
+
+.title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+@media only screen and (max-width: 550px) {
+  .data-container {
+    max-width: 480px;
+    width: calc(100% - 30px);
+  }
+}

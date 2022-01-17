@@ -1,0 +1,20 @@
+.button {
+  height: 45px;
+  border: 0;
+  width: 100%;
+  margin: 4px 0px;
+  padding-left: 40px;
+  padding-right: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  color: #3d3e3e;
+  background-color: #ebebeb;
+  height: 50px;
+  transition: transform .5s; /* Animation */
+}
+
+.button:hover {
+  transform: scale(1.025);
+}

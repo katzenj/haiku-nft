@@ -1,0 +1,18 @@
+node_modules
+.env
+coverage
+coverage.json
+typechain
+
+#Hardhat files
+cache
+artifacts
+
+# For frontend.
+.DS_Store
+dist
+dist-ssr
+*.local
+.cache
+*.log
+.parcel-cache

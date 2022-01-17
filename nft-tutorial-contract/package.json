@@ -1,0 +1,26 @@
+{
+  "name": "nft-tutorial",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "test:run": "hardhat run scripts/run.js",
+    "test:unit": "hardhat test",
+    "deploy:rinkeby": "hardhat run scripts/deploy.js --network rinkeby",
+    "encode:json": "node scripts/encodeJson.js",
+    "deploy:local": "hardhat node"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.4",
+    "@nomiclabs/hardhat-etherscan": "^3.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "chai": "^4.3.4",
+    "dotenv": "^13.0.1",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.3",
+    "hardhat": "^2.8.2"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.4.2"
+  }
+}
