@@ -1,0 +1,14 @@
+.loading {
+  border: 8px solid #2D384D;
+  border-top: 8px solid white;
+  border-radius: 50%;
+  height: 16px;
+  width: 16px;
+  animation: spin 2s linear infinite;
+  margin: auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import Button from "./Button";
 
 import { CONTRACT_ADDRESS } from "../utils/constants";
-import abi from "../utils/JordaNFT.json";
+import abi from "../utils/Haiku.json";
 import "./MintNFT.css";
 
 const MintNFT = ({ signer }) => {
@@ -12,10 +12,6 @@ const MintNFT = ({ signer }) => {
 
   const [loading, setLoading] = useState(false);
 
-  const [
-    { data: signData, error: signError, loading: signLoading },
-    signMessage,
-  ] = useSignMessage();
   // const contract = useContract({
   //   addressOrName: CONTRACT_ADDRESS,
   //   contractInterface: ABI,
@@ -25,11 +21,8 @@ const MintNFT = ({ signer }) => {
   const maybeMint = async () => {
     try {
       setLoading(true);
-      signMessage({ message: "woof" });
-      console.log("before");
-      console.log(signer);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-      const txn = await contract.mintJordaNFT();
+      const txn = await contract.mint();
       console.log("mining --- ", txn);
       await txn.wait();
       console.log("mined --- ", txn);
@@ -42,7 +35,7 @@ const MintNFT = ({ signer }) => {
 
   return (
     <Button onClick={() => maybeMint()}>
-      {loading ? <div className="loading"></div> : "Mint Duck"}
+      {loading ? <div className="loading"></div> : "Mint Haiku"}
     </Button>
   );
 };

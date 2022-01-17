@@ -167,14 +167,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     return abi.encodePacked('{"name": "Haiku #', Strings.toString(tokenId), '", "description": "Your haiku", "image": "data:image/svg+xml;base64,');
   }
 
-  // ============ PUBLIC FUNCTIONS ============
-  function setIsPublicSaleActive(bool _isPublicSaleActive)
-    external
-    onlyOwner
-  {
-    isPublicSaleActive = _isPublicSaleActive;
-  }
-
+  // ============ PUBLIC MINT/MODIFY FUNCTIONS ============
   function mint()
     external
   {
@@ -184,7 +177,6 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
 
     bytes memory finalSvg = abi.encodePacked(baseSvg, svgText,"</text></svg>");
 
-    // Get all the JSON metadata in place and base64 encode it.
     string memory json = Base64.encode(
       abi.encodePacked(
         _getJsonBase(newItemId),
@@ -193,7 +185,6 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
       )
     );
 
-    // Just like before, we prepend data:application/json;base64, to our data.
     string memory finalTokenUri = string(
         abi.encodePacked("data:application/json;base64,", json)
     );
@@ -220,12 +211,9 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
       '</tspan>'
     ));
     bytes memory finalSvg = abi.encodePacked(baseSvg, svgText,"</text></svg>");
-    // Get all the JSON metadata in place and base64 encode it.
     string memory json = Base64.encode(
       abi.encodePacked(_getJsonBase(tokenId), Base64.encode(finalSvg), '"}')
     );
-
-    // Just like before, we prepend data:application/json;base64, to our data.
     string memory finalTokenUri = string(
         abi.encodePacked("data:application/json;base64,", json)
     );
@@ -235,7 +223,15 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     emit HaikuUpdated(msg.sender, block.timestamp, tokenId);
   }
 
-  // The following functions are overrides required by Solidity.
+  // ============ PRIVATE ADMIN-ONLY FUNCTIONS ============
+  function setIsPublicSaleActive(bool _isPublicSaleActive)
+    external
+    onlyOwner
+  {
+    isPublicSaleActive = _isPublicSaleActive;
+  }
+
+  // ============ REQUIRED OVERRIDES ============
   function _beforeTokenTransfer(
     address from,
     address to,

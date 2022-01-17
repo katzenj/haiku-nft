@@ -11,13 +11,14 @@ import { ethers, providers } from "ethers";
 
 import AddressContainer from "./components/AddressContainer";
 import MintNFT from "./components/MintNFT";
+import UpdateNFT from "./components/UpdateNFT";
 import Header from "./components/Header";
 import WalletConnect from "./components/WalletConnect";
 
 import { CONTRACT_ADDRESS, CHAIN_ID } from "./utils/constants";
 
 import "./App.css";
-import abi from "./utils/JordaNFT.json";
+import abi from "./utils/Haiku.json";
 
 const App = () => {
   const ABI = abi.abi;
@@ -30,20 +31,13 @@ const App = () => {
     getSigner,
   ] = useSigner();
   const provider = useProvider();
-  console.log(provider);
-
-  console.log(connectData);
-  accountData &&
-    provider
-      .getTransactionCount(ethers.utils.getAddress(accountData.address))
-      .then((x) => console.log(x));
 
   return (
     <div>
       <Header accountData={accountData} disconnect={disconnect} />
       <div className="main-container">
         <div className="data-container">
-          <div className="title">If it quacks like a duck...</div>
+          <div className="title">A haiku a day...</div>
           <WalletConnect
             accountData={accountData}
             connectData={connectData}
@@ -52,6 +46,7 @@ const App = () => {
           />
           {accountData && !signerLoading ? (
             <>
+              <UpdateNFT signer={signer} />
               <MintNFT signer={signer} />
             </>
           ) : null}

@@ -11,9 +11,6 @@ const main = async () => {
   await nftContract.deployed();
 
   console.log('nft contract address: ', nftContract.address);
-
-  let txn = await nftContract.mintJordaNFT()
-  await txn.wait();
 };
 
 const runMain = async () => {
