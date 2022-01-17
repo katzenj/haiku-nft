@@ -82,6 +82,8 @@ library Base64 {
 
 contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
   using Counters for Counters.Counter;
+  using Strings for uint256;
+
   Counters.Counter private _tokenIds;
 
   uint256 public constant MAX_PER_WALLET = 2;
@@ -126,6 +128,12 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     _;
   }
 
+  // ============ PRIVATE HELPERS ============
+  function getJsonBase(uint256 tokenId) private returns (bytes) {
+    return abi.encodePacked('{"name": "Haiku #', Strings.toString(tokenId), '", "description": "Your haiku", "image": "data:image/svg+xml;base64,');
+  }
+
+  // ============ ACCESS CONTROL/SANITY MODIFIERS ============
 
   function mint() public {
     uint256 newItemId = _tokenIds.current();
@@ -137,7 +145,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     // Get all the JSON metadata in place and base64 encode it.
     string memory json = Base64.encode(
       abi.encodePacked(
-        '{"name": "Haiku", "description": "Your haiku", "image": "data:image/svg+xml;base64,',
+        getJsonBase(newItemId),
         Base64.encode(finalSvg),
         '"}'
       )
@@ -177,11 +185,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     bytes memory finalSvg = abi.encodePacked(baseSvg, svgText,"</text></svg>");
     // Get all the JSON metadata in place and base64 encode it.
     string memory json = Base64.encode(
-      abi.encodePacked(
-        '{"name": "Poem", "description": "Your poem", "image": "data:image/svg+xml;base64,',
-        Base64.encode(finalSvg),
-        '"}'
-      )
+      abi.encodePacked(getJsonBase(tokenId), Base64.encode(finalSvg), '"}')
     );
 
     // Just like before, we prepend data:application/json;base64, to our data.
