@@ -6,7 +6,7 @@ describe("Poem", function () {
 
   beforeEach(async function() {
     const Poem = await ethers.getContractFactory("Haiku");
-    contract = await Poem.deploy();
+    contract = await Poem.deploy(10);
     await contract.deployed();
   });
 
@@ -44,5 +44,24 @@ describe("Poem", function () {
 
     const update = await contract.updatePoem(0, ["one", "two", "three"]);
     await txn.wait();
+  });
+
+  it("emits events", async function () {
+    const [owner] = await ethers.getSigners();
+    const tokenId = 0;
+    const txn = await contract.mint();
+
+    let receipt = await txn.wait();
+    expect(receipt.events.length).to.equal(2); // Transfer & Mint
+    let eventArgs = receipt.events[1].args; // Mint
+    expect(eventArgs.to).to.equal(owner.address);
+    expect(eventArgs.tokenId).to.equal(tokenId);
+
+    const update = await contract.updatePoem(tokenId, ["one", "two", "three"]);
+    receipt = await update.wait();
+    expect(receipt.events.length).to.equal(1)
+    eventArgs = receipt.events[0].args;
+    expect(eventArgs.owner).to.equal(owner.address);
+    expect(eventArgs.tokenId).to.equal(tokenId);
   });
 });

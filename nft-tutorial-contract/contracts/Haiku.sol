@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "hardhat/console.sol";
 
 // [MIT License]
 /// @title Base64
@@ -87,6 +86,10 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
   Counters.Counter private _tokenIds;
 
   uint256 public constant MAX_PER_WALLET = 2;
+  uint256 public constant PUBLIC_SALE_PRICE = 0.05 ether;
+  uint256 public maxHaikus;
+  bool public isPublicSaleActive;
+
 
   // This is our SVG code. All we need to change is the word that's displayed. Everything else stays the same.
   // So, we make a baseSvg variable here that all our NFTs can use.
@@ -95,7 +98,9 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
   event NFTMinted(address indexed to, uint256 timestamp, uint256 tokenId);
   event HaikuUpdated(address indexed owner, uint256 timestamp, uint256 tokenId);
 
-  constructor() ERC721 ("Haiku", "HAIKU") {
+  constructor(uint256 _maxHaikus) ERC721 ("Haiku", "HAIKU") {
+    maxHaikus = _maxHaikus;
+    isPublicSaleActive = true;  // Change for mainnet.
   }
 
   // ============ ACCESS CONTROL/SANITY MODIFIERS ============
@@ -128,14 +133,51 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     _;
   }
 
+  modifier maxHaikusPerWallet(uint256 numberOfTokens) {
+    require(
+        balanceOf(msg.sender) + numberOfTokens <= MAX_PER_WALLET,
+        "Max haikus to mint is two"
+    );
+    _;
+  }
+
+  modifier publicSaleActive() {
+    require(isPublicSaleActive, "Public sale is not open");
+    _;
+  }
+
+  modifier canMintHaiku(uint256 numberOfTokens) {
+    require(
+      _tokenIds.current() + numberOfTokens <= maxHaikus,
+      "Not enough haikus remaining to mint"
+    );
+    _;
+  }
+
+  modifier isCorrectPayment(uint256 numberOfTokens) {
+    require(
+      PUBLIC_SALE_PRICE * numberOfTokens == msg.value,
+      "Incorrect ETH value sent"
+    );
+    _;
+  }
+
   // ============ PRIVATE HELPERS ============
-  function getJsonBase(uint256 tokenId) private returns (bytes) {
+  function _getJsonBase(uint256 tokenId) pure private returns (bytes memory) {
     return abi.encodePacked('{"name": "Haiku #', Strings.toString(tokenId), '", "description": "Your haiku", "image": "data:image/svg+xml;base64,');
   }
 
-  // ============ ACCESS CONTROL/SANITY MODIFIERS ============
+  // ============ PUBLIC FUNCTIONS ============
+  function setIsPublicSaleActive(bool _isPublicSaleActive)
+    external
+    onlyOwner
+  {
+    isPublicSaleActive = _isPublicSaleActive;
+  }
 
-  function mint() public {
+  function mint()
+    external
+  {
     uint256 newItemId = _tokenIds.current();
 
     string memory svgText = '<tspan x="50%" dy="0em">snow coats the window</tspan><tspan x="50%" dy="1.1em">flakes blow across the rooftop</tspan><tspan x="50%" dy="1.1em">oh how cold it is</tspan>';
@@ -145,7 +187,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     // Get all the JSON metadata in place and base64 encode it.
     string memory json = Base64.encode(
       abi.encodePacked(
-        getJsonBase(newItemId),
+        _getJsonBase(newItemId),
         Base64.encode(finalSvg),
         '"}'
       )
@@ -156,22 +198,17 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
         abi.encodePacked("data:application/json;base64,", json)
     );
 
-    console.log("\n--------------------");
-    console.log(finalTokenUri);
-    console.log("--------------------\n");
-
     _safeMint(msg.sender, newItemId);
     _setTokenURI(newItemId, finalTokenUri);
     _tokenIds.increment();
 
-    console.log("An NFT w/ ID %s has been minted to %s", newItemId, msg.sender);
     emit NFTMinted(msg.sender, block.timestamp, newItemId);
   }
 
   function updatePoem(uint256 tokenId, string[] calldata haiku)
+    external
     ownsToken(tokenId)
     validHaiku(haiku)
-    external
   {
     string memory svgText = string(abi.encodePacked(
       '<tspan x="50%" dy="0em">',
@@ -185,17 +222,13 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     bytes memory finalSvg = abi.encodePacked(baseSvg, svgText,"</text></svg>");
     // Get all the JSON metadata in place and base64 encode it.
     string memory json = Base64.encode(
-      abi.encodePacked(getJsonBase(tokenId), Base64.encode(finalSvg), '"}')
+      abi.encodePacked(_getJsonBase(tokenId), Base64.encode(finalSvg), '"}')
     );
 
     // Just like before, we prepend data:application/json;base64, to our data.
     string memory finalTokenUri = string(
         abi.encodePacked("data:application/json;base64,", json)
     );
-
-    console.log("\n--------------------");
-    console.log(finalTokenUri);
-    console.log("--------------------\n");
 
     _setTokenURI(tokenId, finalTokenUri);
 

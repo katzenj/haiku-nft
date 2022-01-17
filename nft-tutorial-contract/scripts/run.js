@@ -6,7 +6,7 @@ const main = async () => {
   ] = await hre.ethers.getSigners();
 
   const nftContractFactory = await hre.ethers.getContractFactory('Haiku');
-  const nftContract = await nftContractFactory.deploy();
+  const nftContract = await nftContractFactory.deploy(10);
   await nftContract.deployed();
   console.log("Contract deployed to: %s", nftContract.address);
 

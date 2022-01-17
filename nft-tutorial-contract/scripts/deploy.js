@@ -6,8 +6,8 @@ const main = async () => {
   console.log('Deploying contracts with account: ', deployer.address);
   console.log('Deployer balance: ', accountBalance.toString());
 
-  const nftContractFactory = await hre.ethers.getContractFactory('JordaNFT');
-  const nftContract = await nftContractFactory.deploy();
+  const nftContractFactory = await hre.ethers.getContractFactory('Haiku');
+  const nftContract = await nftContractFactory.deploy(10);
   await nftContract.deployed();
 
   console.log('nft contract address: ', nftContract.address);

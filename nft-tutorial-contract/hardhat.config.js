@@ -2,7 +2,7 @@ require("dotenv").config();
 
 // require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
-// require("hardhat-gas-reporter");
+require("hardhat-gas-reporter");
 // require("solidity-coverage");
 
 // You need to export an object to set up your config
@@ -26,8 +26,10 @@ module.exports = {
     },
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
+    enabled: process.env.REPORT_GAS !== undefined,
+    gasPriceApi: "https://api.etherscan.io/api?module=proxy&action=eth_gasPrice",
+    gasPrice: 220,
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
