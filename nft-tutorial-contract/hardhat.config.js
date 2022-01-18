@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-// require("@nomiclabs/hardhat-etherscan");
+require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-waffle");
 require("hardhat-gas-reporter");
 // require("solidity-coverage");
@@ -14,6 +14,10 @@ require("hardhat-gas-reporter");
 module.exports = {
   solidity: "0.8.4",
   networks: {
+    defaultNetwork: {
+      url: process.env.MUMBAI_ALCHEMY_KEY,
+      accounts: [process.env.PRIVATE_KEY],
+    },
     ropsten: {
       url: process.env.RINKEBY || "",
       accounts:
@@ -24,6 +28,10 @@ module.exports = {
       accounts:
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
+    polygon_mumbai: {
+      url: process.env.MUMBAI_ALCHEMY_KEY,
+      accounts: [process.env.PRIVATE_KEY],
+    },
   },
   gasReporter: {
     currency: "USD",
@@ -32,6 +40,12 @@ module.exports = {
     gasPrice: 220,
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      mainnet: process.env.ETHERSCAN_RINKEBY_API_KEY,
+      rinkeby: process.env.ETHERSCAN_RINKEBY_API_KEY,
+      // polygon
+      polygon: process.env.ETHERSCAN_MUMBAI_API_KEY,
+      polygonMumbai: process.env.ETHERSCAN_MUMBAI_API_KEY,
+    }
   },
 };

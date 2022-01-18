@@ -7,6 +7,9 @@
     "test:run": "hardhat run scripts/run.js",
     "test:unit": "hardhat test",
     "deploy:rinkeby": "hardhat run scripts/deploy.js --network rinkeby",
+    "verify:rinkeby": "hardhat verify --network rinkeby 0xe723428534433e3d187e6e04f2f00c747f1a8160 10",
+    "verify:mumbai": "hardhat verify --network polygon_mumbai 0x1a97B29f61A6f4F014baAb29CF9ad911Bdd656DF 10",
+    "deploy:mumbai": "hardhat run scripts/deploy.js --network polygon_mumbai",
     "encode:json": "node scripts/encodeJson.js",
     "deploy:local": "hardhat node"
   },

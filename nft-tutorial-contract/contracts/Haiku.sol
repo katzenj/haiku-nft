@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: Unlicensed
 pragma solidity ^0.8.0;
 
 // We need some util functions for strings.
@@ -219,7 +219,6 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     );
 
     _setTokenURI(tokenId, finalTokenUri);
-
     emit HaikuUpdated(msg.sender, block.timestamp, tokenId);
   }
 

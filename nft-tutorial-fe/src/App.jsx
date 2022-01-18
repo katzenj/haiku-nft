@@ -10,6 +10,7 @@ import {
 import { ethers, providers } from "ethers";
 
 import AddressContainer from "./components/AddressContainer";
+import ListNFTs from "./components/ListNFTs";
 import MintNFT from "./components/MintNFT";
 import UpdateNFT from "./components/UpdateNFT";
 import Header from "./components/Header";
@@ -30,7 +31,40 @@ const App = () => {
     { data: signer, error: signerError, loading: signerLoading },
     getSigner,
   ] = useSigner();
+
+  const [selectedNft, setSelectedNft] = useState(null);
+
   const provider = useProvider();
+  const contract = useContract({
+    addressOrName: CONTRACT_ADDRESS,
+    contractInterface: ABI,
+    signerOrProvider: provider,
+  });
+
+  const onUpdate = (owner, timestamp, tokenId) => {
+    const thing = {
+      owner,
+      timestamp: new Date(timestamp * 1000),
+      tokenId,
+    };
+    console.log(thing);
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (provider) {
+      provider.pollingInterval = 600000; // 6 minutes
+      contract.on("HaikuUpdated", onUpdate);
+    }
+
+    return () => {
+      if (contract) {
+        contract.off("HaikuUpdated", onUpdate);
+      }
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div>
@@ -44,10 +78,25 @@ const App = () => {
             connectError={connectError}
             connect={connect}
           />
-          {accountData && !signerLoading ? (
+          {accountData && signer ? (
             <>
-              <UpdateNFT signer={signer} />
-              <MintNFT signer={signer} />
+              {selectedNft ? (
+                <UpdateNFT
+                  nftData={selectedNft}
+                  signer={signer}
+                  unsetNft={() => setSelectedNft(null)}
+                />
+              ) : (
+                <>
+                  <ListNFTs
+                    userAddress={accountData.address}
+                    signer={signer}
+                    selectedNft={selectedNft}
+                    setSelectedNft={setSelectedNft}
+                  />
+                  <MintNFT signer={signer} />
+                </>
+              )}
             </>
           ) : null}
         </div>

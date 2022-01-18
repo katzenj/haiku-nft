@@ -22,7 +22,7 @@ const Header = ({ accountData, disconnect }) => {
   };
   return (
     <header className="header-container">
-      <h1 className="header-title">Custom Haikus</h1>
+      <h1 className="header-title">Your Haikus</h1>
       <div className="header-right">
         {renderAccountData()}
         {accountData && <Button onClick={disconnect}>Disconnect</Button>}

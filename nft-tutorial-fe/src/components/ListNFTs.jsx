@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useContract, useSignMessage } from "wagmi";
 import { ethers } from "ethers";
 import Button from "./Button";
+import UpdateNFT from "./UpdateNFT";
 
 import { CONTRACT_ADDRESS } from "../utils/constants";
 import abi from "../utils/Haiku.json";
-import "./MintNFT.css";
+import "./ListNFTs.css";
 
-const UpdateNFT = ({ nftData, signer, unsetNft }) => {
+const ListNFTs = ({ userAddress, signer, selectedNft, setSelectedNft }) => {
   const ABI = abi.abi;
 
   const [loading, setLoading] = useState(false);
@@ -19,29 +20,57 @@ const UpdateNFT = ({ nftData, signer, unsetNft }) => {
     signerOrProvider: signer,
   });
 
-  const maybeUpdate = async ({ tokenId }) => {
-    try {
-      setLoading(true);
-      const txn = await contract.updatePoem(
-        ethers.BigNumber.from(tokenId),
-        ["test", "update", "nft"],
-        { gasLimit: 900000 }
-      );
-      console.log("mining --- ", txn);
-      await txn.wait();
-      console.log("mined --- ", txn);
-      setLoading(false);
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
+  const getImage = (encodedJson) => {
+    const index = encodedJson.indexOf(",");
+    const substr = encodedJson.substring(index + 1);
+    const decoded = atob(substr);
+    const image = JSON.parse(decoded)["image"];
+    return image;
+  };
+
+  const getNfts = async () => {
+    const moralisBase = "https://deep-index.moralis.io/api/v2/";
+    const url = moralisBase.concat(
+      userAddress,
+      "/nft/",
+      CONTRACT_ADDRESS,
+      "?chain=mumbai&format=decimal"
+    );
+    const res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key":
+          "krykhc3xNHLWfWCyXCRLox7OjUnt8Mmh0uOY33A8sFyXj7qgppaddzMG5HepfLgk",
+      },
+    });
+    const json = await res.json();
+    const results = json["result"];
+    Promise.all(results.map((res) => getNftData(res))).then((nfts) =>
+      setNfts(nfts)
+    );
+  };
+
+  const getNftData = async (res) => {
+    let tokenUri = res.tokenUri;
+    if (res.syncing > 0) {
+      tokenUri = await contract.tokenURI(res.token_id);
     }
+
+    return {
+      tokenId: res.token_id,
+      tokenUri: tokenUri,
+      image: getImage(tokenUri),
+    };
+  };
+
+  const selectNft = (tokenId) => {
+    setSelectedNft(nfts[tokenId]);
   };
 
   useEffect(() => {
     let isMounted = true;
     if (isMounted && signer !== null) {
       // getNfts();
-      console.log(nftData);
       setNfts([
         {
           tokenId: "0",
@@ -56,14 +85,20 @@ const UpdateNFT = ({ nftData, signer, unsetNft }) => {
 
   return (
     <>
-      <div key={nftData.tokenId}>
-        <img src={`${nftData.image}`} />
-        <Button onClick={() => maybeUpdate({ tokenId: nftData.tokenId })}>
-          {loading ? <div className="loading"></div> : "Update Haiku"}
-        </Button>
-      </div>
+      {nfts.map((nft) => {
+        return (
+          <div key={nft.tokenId} className="nfts-container">
+            <button
+              onClick={() => selectNft(nft.tokenId)}
+              className="image-button"
+            >
+              <img src={`${nft.image}`} />
+            </button>
+          </div>
+        );
+      })}
     </>
   );
 };
 
-export default UpdateNFT;
+export default ListNFTs;

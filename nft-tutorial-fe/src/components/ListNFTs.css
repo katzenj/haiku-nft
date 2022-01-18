@@ -1,0 +1,16 @@
+.nfts-container {
+  margin: 16px 0px;
+}
+
+.image-button {
+  border: none;
+  background: none;
+  height: 100%;
+  width: 100%;
+  cursor: pointer;
+  transition: transform .5s; /* Animation */
+}
+
+.image-button:hover {
+  transform: scale(1.025);
+}

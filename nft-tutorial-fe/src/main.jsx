@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Provider, chain, defaultChains } from "wagmi";
+import { Provider, chain, defaultL2Chains } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { WalletLinkConnector } from "wagmi/connectors/walletLink";
@@ -13,13 +13,13 @@ import { INFURA_ID, NETWORK, CHAIN_ID, ALCHEMY_KEY } from "./utils/constants";
 
 // Chains for connectors to support
 // TODO: change when ready.
-const chains = defaultChains.filter((c) => String(c.id) === CHAIN_ID);
+const chains = defaultL2Chains.filter((c) => String(c.id) === CHAIN_ID);
 
 // Set up connectors
 const connectors = ({ chainId }) => {
   const rpcUrl =
     chains.find((x) => x.id === chainId)?.rpcUrls?.[0] ??
-    chain.rinkeby.rpcUrls[0]; // for devnet testing.
+    chain.polygonTestnetMumbai.rpcUrls[0]; // for devnet testing.
 
   return [
     new InjectedConnector({ chains }),
