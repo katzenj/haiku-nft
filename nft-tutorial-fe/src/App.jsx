@@ -12,11 +12,10 @@ import { ethers, providers } from "ethers";
 import AddressContainer from "./components/AddressContainer";
 import ListNFTs from "./components/ListNFTs";
 import MintNFT from "./components/MintNFT";
-import UpdateNFT from "./components/UpdateNFT";
 import Header from "./components/Header";
 import WalletConnect from "./components/WalletConnect";
 
-import { CONTRACT_ADDRESS, CHAIN_ID } from "./utils/constants";
+import { CONTRACT_ADDRESS } from "./utils/constants";
 
 import "./App.css";
 import abi from "./utils/Haiku.json";
@@ -31,9 +30,6 @@ const App = () => {
     { data: signer, error: signerError, loading: signerLoading },
     getSigner,
   ] = useSigner();
-
-  const [selectedNft, setSelectedNft] = useState(null);
-
   const provider = useProvider();
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
@@ -67,7 +63,7 @@ const App = () => {
   }, []);
 
   return (
-    <div>
+    <div className="app-container">
       <Header accountData={accountData} disconnect={disconnect} />
       <div className="main-container">
         <div className="data-container">
@@ -80,23 +76,8 @@ const App = () => {
           />
           {accountData && signer ? (
             <>
-              {selectedNft ? (
-                <UpdateNFT
-                  nftData={selectedNft}
-                  signer={signer}
-                  unsetNft={() => setSelectedNft(null)}
-                />
-              ) : (
-                <>
-                  <ListNFTs
-                    userAddress={accountData.address}
-                    signer={signer}
-                    selectedNft={selectedNft}
-                    setSelectedNft={setSelectedNft}
-                  />
-                  <MintNFT signer={signer} />
-                </>
-              )}
+              <ListNFTs userAddress={accountData.address} signer={signer} />
+              <MintNFT signer={signer} />
             </>
           ) : null}
         </div>
