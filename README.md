@@ -12,6 +12,6 @@ in an app.
 Generates a haiku SVG that lives on-chain. The haiku created is the same each time, but I'm currently exploring two separate possibilities:
 1. a "random" haiku from a set I created where you can edit the text color and background color
 2. a static haiku that you can then update yourself to contain whatever you want (within reason/with limits)
-  - user input is always tricky, so I'm focusing primarily on #1 for the time being
+    - user input is always tricky, so I'm focusing primarily on #1 for the time being
   
   
