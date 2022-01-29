@@ -39,8 +39,8 @@ const EditColor = ({ title, color, setColor }) => {
 
 const HaikuEdit = ({ signer, lines, onSubmit, tokenId }) => {
   const [loading, setLoading] = useState(false);
-  const [fontColor, setFontColor] = useState("#aabbcc");
-  const [bgColor, setBgColor] = useState("#aabbcc");
+  const [fontColor, setFontColor] = useState("#fff");
+  const [bgColor, setBgColor] = useState("#000");
 
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
