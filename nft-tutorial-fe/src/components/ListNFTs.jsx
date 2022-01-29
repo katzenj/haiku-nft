@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useContract, useSignMessage } from "wagmi";
+import { useContract, useProvider } from "wagmi";
 import { ethers } from "ethers";
 import Button from "./Button";
 import NFTCard from "./NFTCard";
@@ -12,6 +12,7 @@ const ListNFTs = ({ userAddress, signer }) => {
   const ABI = abi.abi;
 
   const [nfts, setNfts] = useState([]);
+  const provider = useProvider();
 
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
@@ -76,33 +77,17 @@ const ListNFTs = ({ userAddress, signer }) => {
     let isMounted = true;
     if (isMounted && signer !== null) {
       getNfts();
-
-      // setNfts([
-      //   {
-      //     description: "Your haiku",
-      //     image:
-      //       "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHByZXNlcnZlQXNwZWN0UmF0aW89J3hNaW5ZTWluIG1lZXQnIHZpZXdCb3g9JzAgMCAzNTAgMzUwJz48c3R5bGU+LmJhc2UgeyBmaWxsOiB3aGl0ZTsgZm9udC1mYW1pbHk6IHNlcmlmOyBmb250LXNpemU6IDI0cHg7IH08L3N0eWxlPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyM1NTg0OWYnIC8+PHRleHQgeD0nNTAlJyB5PScyNSUnIGNsYXNzPSdiYXNlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz48dHNwYW4geD0iNTAlIiBkeT0iMGVtIj50ZXN0PC90c3Bhbj48dHNwYW4geD0iNTAlIiBkeT0iMS4xZW0iPnVwZGF0ZTwvdHNwYW4+PHRzcGFuIHg9IjUwJSIgZHk9IjEuMWVtIj5uZnQ8L3RzcGFuPjwvdGV4dD48L3N2Zz4=",
-      //     name: "Haiku #0",
-      //     imageSvg: atob(
-      //       "PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHByZXNlcnZlQXNwZWN0UmF0aW89J3hNaW5ZTWluIG1lZXQnIHZpZXdCb3g9JzAgMCAzNTAgMzUwJz48c3R5bGU+LmJhc2UgeyBmaWxsOiB3aGl0ZTsgZm9udC1mYW1pbHk6IHNlcmlmOyBmb250LXNpemU6IDI0cHg7IH08L3N0eWxlPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyM1NTg0OWYnIC8+PHRleHQgeD0nNTAlJyB5PScyNSUnIGNsYXNzPSdiYXNlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz48dHNwYW4geD0iNTAlIiBkeT0iMGVtIj50ZXN0PC90c3Bhbj48dHNwYW4geD0iNTAlIiBkeT0iMS4xZW0iPnVwZGF0ZTwvdHNwYW4+PHRzcGFuIHg9IjUwJSIgZHk9IjEuMWVtIj5uZnQ8L3RzcGFuPjwvdGV4dD48L3N2Zz4="
-      //     ),
-      //     lines: ["test", "update", "nft"],
-      //     tokenId: "0",
-      //   },
-
-      //   {
-      //     description: "Your haiku 2",
-      //     imageSvg: atob(
-      //       "PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHByZXNlcnZlQXNwZWN0UmF0aW89J3hNaW5ZTWluIG1lZXQnIHZpZXdCb3g9JzAgMCAzNTAgMzUwJz48c3R5bGU+LmJhc2UgeyBmaWxsOiB3aGl0ZTsgZm9udC1mYW1pbHk6IHNlcmlmOyBmb250LXNpemU6IDI0cHg7IH08L3N0eWxlPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyM1NTg0OWYnIC8+PHRleHQgeD0nNTAlJyB5PScyNSUnIGNsYXNzPSdiYXNlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz48dHNwYW4geD0iNTAlIiBkeT0iMGVtIj50ZXN0PC90c3Bhbj48dHNwYW4geD0iNTAlIiBkeT0iMS4xZW0iPnVwZGF0ZTwvdHNwYW4+PHRzcGFuIHg9IjUwJSIgZHk9IjEuMWVtIj5uZnQ8L3RzcGFuPjwvdGV4dD48L3N2Zz4="
-      //     ),
-      //     image:
-      //       "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHByZXNlcnZlQXNwZWN0UmF0aW89J3hNaW5ZTWluIG1lZXQnIHZpZXdCb3g9JzAgMCAzNTAgMzUwJz48c3R5bGU+LmJhc2UgeyBmaWxsOiB3aGl0ZTsgZm9udC1mYW1pbHk6IHNlcmlmOyBmb250LXNpemU6IDI0cHg7IH08L3N0eWxlPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyM1NTg0OWYnIC8+PHRleHQgeD0nNTAlJyB5PScyNSUnIGNsYXNzPSdiYXNlJyBkb21pbmFudC1iYXNlbGluZT0nbWlkZGxlJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz48dHNwYW4geD0iNTAlIiBkeT0iMGVtIj50ZXN0PC90c3Bhbj48dHNwYW4geD0iNTAlIiBkeT0iMS4xZW0iPnVwZGF0ZTwvdHNwYW4+PHRzcGFuIHg9IjUwJSIgZHk9IjEuMWVtIj5uZnQ8L3RzcGFuPjwvdGV4dD48L3N2Zz4=",
-      //     name: "Haiku #2",
-      //     lines: ["test", "update", "nft"],
-      //     tokenId: "1",
-      //   },
-      // ]);
     }
+    if (provider) {
+      provider.pollingInterval = 600000; // 6 minutes
+      contract.on("HaikuUpdated", getNfts);
+    }
+
+    return () => {
+      if (contract) {
+        contract.off("HaikuUpdated", getNfts);
+      }
+    };
   }, [signer]);
 
   return (

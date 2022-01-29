@@ -17,7 +17,7 @@ const NFTCard = ({ nftData, signer, unsetNft }) => {
   const [lineData, setLineData] = useState(nftData.lines ? nftData.lines : []);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center" }}>
+    <div className="card-container">
       <Card text="dark" style={{ width: "100%", borderRadius: "10px" }}>
         <Card.Img
           variant="top"

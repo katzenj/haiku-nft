@@ -17,8 +17,8 @@ const EditColor = ({ title, color, setColor }) => {
 
   return (
     <>
-      <p>
-        {title}: {color}
+      <p className="edit-color">
+        <b>{title}:</b> {color}
         <button className="edit-button" onClick={() => setEditing(!editing)}>
           <i className="far fa-edit"></i>
         </button>
