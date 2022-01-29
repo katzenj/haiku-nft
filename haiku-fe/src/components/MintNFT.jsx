@@ -11,17 +11,17 @@ const MintNFT = ({ signer }) => {
   const ABI = abi.abi;
 
   const [loading, setLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
-  // const contract = useContract({
-  //   addressOrName: CONTRACT_ADDRESS,
-  //   contractInterface: ABI,
-  //   signerOrProvider: signer,
-  // });
+  const contract = useContract({
+    addressOrName: CONTRACT_ADDRESS,
+    contractInterface: ABI,
+    signerOrProvider: signer,
+  });
 
   const maybeMint = async () => {
     try {
       setLoading(true);
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
       const txn = await contract.mint();
       console.log("mining --- ", txn);
       await txn.wait();
@@ -34,9 +34,12 @@ const MintNFT = ({ signer }) => {
   };
 
   return (
-    <Button onClick={() => maybeMint()}>
-      {loading ? <div className="loading"></div> : "Mint Haiku"}
-    </Button>
+    <>
+      <h1 className="mint-title">Mint</h1>
+      <Button onClick={() => maybeMint()}>
+        {loading ? <div className="loading"></div> : "Mint Haiku"}
+      </Button>
+    </>
   );
 };
 

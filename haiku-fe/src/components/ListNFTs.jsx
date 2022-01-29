@@ -92,6 +92,7 @@ const ListNFTs = ({ userAddress, signer }) => {
 
   return (
     <>
+      <h1 className="list-nfts-title">My Haikus</h1>
       {nfts.map((nft) => {
         return (
           <div key={nft.tokenId} className="nfts-container">

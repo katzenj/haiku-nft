@@ -2,6 +2,10 @@
   margin: 16px 0px;
 }
 
+.list-nfts-title {
+  text-align: center;
+}
+
 .image-button {
   border: none;
   background: none;

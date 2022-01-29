@@ -38,8 +38,8 @@ const App = () => {
           />
           {accountData && signer ? (
             <>
-              <ListNFTs userAddress={accountData.address} signer={signer} />
               <MintNFT signer={signer} />
+              <ListNFTs userAddress={accountData.address} signer={signer} />
             </>
           ) : null}
         </div>
