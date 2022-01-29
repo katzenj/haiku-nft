@@ -85,15 +85,11 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
 
   Counters.Counter private _tokenIds;
 
-  uint256 public constant MAX_PER_WALLET = 2;
-  uint256 public constant PUBLIC_SALE_PRICE = 0.05 ether;
+  uint256 public constant MAX_PER_WALLET = 5;
   uint256 public maxHaikus;
-  bool public isPublicSaleActive;
 
   mapping(uint256 => string) private tokenIdToHaikuSvg;
 
-  // This is our SVG code. All we need to change is the word that's displayed. Everything else stays the same.
-  // So, we make a baseSvg variable here that all our NFTs can use.
   string private constant baseSvg = "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: white; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill='#55849f' /><text x='50%' y='25%' class='base' dominant-baseline='middle' text-anchor='middle'>";
 
   event NFTMinted(address indexed to, uint256 timestamp, uint256 tokenId);
@@ -101,7 +97,6 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
 
   constructor(uint256 _maxHaikus) ERC721 ("Haiku", "HAIKU") {
     maxHaikus = _maxHaikus;
-    isPublicSaleActive = true;  // Change for mainnet.
   }
 
   // ============ ACCESS CONTROL/SANITY MODIFIERS ============
@@ -114,16 +109,11 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     _;
   }
 
-  modifier maxHaikusPerWallet(uint256 numberOfTokens) {
+  modifier maxHaikusPerWallet() {
     require(
-        balanceOf(msg.sender) + numberOfTokens <= MAX_PER_WALLET,
-        "Max haikus to mint is two"
+        balanceOf(msg.sender) + 1 <= MAX_PER_WALLET,
+        "Max haikus to mint is 10"
     );
-    _;
-  }
-
-  modifier publicSaleActive() {
-    require(isPublicSaleActive, "Public sale is not open");
     _;
   }
 
@@ -135,18 +125,10 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     _;
   }
 
-  modifier isCorrectPayment(uint256 numberOfTokens) {
-    require(
-      PUBLIC_SALE_PRICE * numberOfTokens == msg.value,
-      "Incorrect ETH value sent"
-    );
-    _;
-  }
-
   modifier isValidHexColor(bytes memory color) {
     require(color.length < 8 && color.length > 3, "must be a valid hex color");
-    bool valid = isValidColor(color);
-    require(valid == true, "invalid hex color");
+    bool valid = _isValidColor(color);
+    require(valid, "invalid hex color");
     _;
   }
 
@@ -155,7 +137,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     return abi.encodePacked('{"name": "Haiku #', Strings.toString(tokenId), '", "description": "Your haiku", "image": "data:image/svg+xml;base64,');
   }
 
-  function isValidColor(bytes memory color) pure private returns (bool) {
+  function _isValidColor(bytes memory color) pure private returns (bool) {
     for(uint i; i < color.length; i++){
       uint8 c = uint8(color[i]);
       if (i == 0 && uint8(c) != 35) {
@@ -174,9 +156,32 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     return true;
   }
 
+  function _getSvgForUpdate(
+    uint256 tokenId,
+    string calldata bgColor,
+    string calldata fontColor
+  )
+    private
+    view
+    returns (bytes memory)
+  {
+    string memory svgText = tokenIdToHaikuSvg[tokenId];
+    bytes memory finalSvg = abi.encodePacked(
+      "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: ",
+      fontColor,
+      "; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill=\"",
+      bgColor,
+      "\" /><text x='50%' y='25%' class='base' dominant-baseline='middle' text-anchor='middle'>",
+      svgText,
+      "</text></svg>"
+    );
+    return finalSvg;
+  }
+
   // ============ PUBLIC MINT/MODIFY FUNCTIONS ============
   function mint()
     external
+    maxHaikusPerWallet()
   {
     uint256 newItemId = _tokenIds.current();
 
@@ -213,28 +218,13 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     isValidHexColor(bytes(bgColor))
     isValidHexColor(bytes(fontColor))
   {
-    string memory json;
-    {
-      string memory colorSvgBase = string(
-        abi.encodePacked(
-          "<svg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='xMinYMin meet' viewBox='0 0 350 350'><style>.base { fill: ",
-          fontColor,
-          "; font-family: serif; font-size: 24px; }</style><rect width='100%' height='100%' fill=\"",
-          bgColor,
-          "\" /><text x='50%' y='25%' class='base' dominant-baseline='middle' text-anchor='middle'>"
-        )
-      );
-      string memory svgText = tokenIdToHaikuSvg[tokenId];
-      bytes memory finalSvg = abi.encodePacked(colorSvgBase, svgText,"</text></svg>");
-
-      json = Base64.encode(
-        abi.encodePacked(
-          _getJsonBase(tokenId),
-          Base64.encode(finalSvg),
-          '"}'
-        )
-      );
-    }
+    string memory json = Base64.encode(
+      abi.encodePacked(
+        _getJsonBase(tokenId),
+        Base64.encode(_getSvgForUpdate(tokenId, bgColor, fontColor)),
+        '"}'
+      )
+    );
     string memory finalTokenUri = string(
       abi.encodePacked("data:application/json;base64,", json)
     );
@@ -244,12 +234,6 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
   }
 
   // ============ PRIVATE ADMIN-ONLY FUNCTIONS ============
-  function setIsPublicSaleActive(bool _isPublicSaleActive)
-    external
-    onlyOwner
-  {
-    isPublicSaleActive = _isPublicSaleActive;
-  }
 
   // ============ REQUIRED OVERRIDES ============
   function _beforeTokenTransfer(
