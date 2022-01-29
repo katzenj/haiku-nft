@@ -9,7 +9,6 @@ import {
 } from "wagmi";
 import { ethers, providers } from "ethers";
 
-import AddressContainer from "./components/AddressContainer";
 import ListNFTs from "./components/ListNFTs";
 import MintNFT from "./components/MintNFT";
 import Header from "./components/Header";
