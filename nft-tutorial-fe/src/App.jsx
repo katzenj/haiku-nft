@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  useAccount,
-  useConnect,
-  useContract,
-  useProvider,
-  useSigner,
-  useEnsLookup,
-} from "wagmi";
-import { ethers, providers } from "ethers";
+import { useAccount, useConnect, useSigner, useEnsLookup } from "wagmi";
+import { ethers } from "ethers";
 
 import ListNFTs from "./components/ListNFTs";
 import MintNFT from "./components/MintNFT";
@@ -29,37 +22,6 @@ const App = () => {
     { data: signer, error: signerError, loading: signerLoading },
     getSigner,
   ] = useSigner();
-  const provider = useProvider();
-  const contract = useContract({
-    addressOrName: CONTRACT_ADDRESS,
-    contractInterface: ABI,
-    signerOrProvider: provider,
-  });
-
-  const onUpdate = (owner, timestamp, tokenId) => {
-    const thing = {
-      owner,
-      timestamp: new Date(timestamp * 1000),
-      tokenId,
-    };
-    console.log(thing);
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (provider) {
-      provider.pollingInterval = 600000; // 6 minutes
-      contract.on("HaikuUpdated", onUpdate);
-    }
-
-    return () => {
-      if (contract) {
-        contract.off("HaikuUpdated", onUpdate);
-      }
-      isMounted = false;
-    };
-  }, []);
 
   return (
     <div className="app-container">
