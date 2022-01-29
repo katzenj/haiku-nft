@@ -29,6 +29,7 @@ const App = () => {
       <div className="main-container">
         <div className="data-container">
           <div className="title">A haiku a day...</div>
+          <h4>(Mumbai Polygon Testnet Only!)</h4>
           <WalletConnect
             accountData={accountData}
             connectData={connectData}

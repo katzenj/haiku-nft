@@ -24,6 +24,10 @@
   font-weight: 600;
 }
 
+h4 {
+  text-align: center;
+}
+
 @media only screen and (max-width: 550px) {
   .data-container {
     max-width: 480px;
