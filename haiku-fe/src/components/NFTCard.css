@@ -3,6 +3,26 @@
   justify-content: center;
 }
 
+.card {
+  background-color: white;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.card-body {
+  color: black;
+  padding: 4px;
+}
+
+.card-header {
+  padding: 0px 0px 8px 0px;
+  text-align: left;
+}
+
+img {
+  border-radius: 10px 10px 0px 0px;
+}
+
 .loading {
   border: 8px solid #2D384D;
   border-top: 8px solid white;

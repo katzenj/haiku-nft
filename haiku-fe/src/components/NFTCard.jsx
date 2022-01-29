@@ -18,22 +18,18 @@ const NFTCard = ({ nftData, signer, unsetNft }) => {
 
   return (
     <div className="card-container">
-      <Card text="dark" style={{ width: "100%", borderRadius: "10px" }}>
-        <Card.Img
-          variant="top"
-          src={nftData.image}
-          style={{ borderRadius: "10px 10px 0px 0px" }}
-        />
-        <Card.Body>
-          <Card.Title>{nftData.name}</Card.Title>
-          <Card.Text>{nftData.description}</Card.Text>
+      <div className="card">
+        <img src={nftData.image} />
+        <div className="card-body">
+          <h4 className="card-header">{nftData.name}</h4>
+          <p>{nftData.description}</p>
           <HaikuEdit
             signer={signer}
             lines={nftData.lines}
             tokenId={nftData.tokenId}
           />
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
