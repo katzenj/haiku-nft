@@ -18,10 +18,10 @@ const main = async () => {
   txn = await nftContract.mint();
   await txn.wait();
 
-  txn = await nftContract.updatePoem(1, ["new", "haiku", "pls"]);
+  txn = await nftContract.updatePoem(1, "#000", "#fff");
   await txn.wait();
 
-  txn = await nftContract.connect(randomPerson).updatePoem(0, ["new", "haiku", "pls"]);
+  txn = await nftContract.connect(randomPerson).updatePoem(0, "#000", "#fff");
   await txn.wait();
 
 };

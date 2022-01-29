@@ -1,21 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useContract } from "wagmi";
-import Form from "react-bootstrap/Form";
+import { HexColorPicker } from "react-colorful";
 
 import Button from "./Button";
 
 import { CONTRACT_ADDRESS } from "../utils/constants";
 import abi from "../utils/Haiku.json";
 
+import "./HaikuEdit.css";
+
 const ABI = abi.abi;
 
+const EditColor = ({ title, color, setColor }) => {
+  const [editing, setEditing] = useState(false);
+
+  return (
+    <>
+      <p>
+        {title}: {color}
+        <button className="edit-button" onClick={() => setEditing(!editing)}>
+          <i className="far fa-edit"></i>
+        </button>
+      </p>
+      {editing ? <HexColorPicker color={color} onChange={setColor} /> : null}
+    </>
+  );
+};
+
 const HaikuEdit = ({ signer, lines, onSubmit, tokenId }) => {
-  const [lineOne, setLineOne] = useState("");
-  const [lineTwo, setLineTwo] = useState("");
-  const [lineThree, setLineThree] = useState("");
-  const [validated, setValidated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [fontColor, setFontColor] = useState("#aabbcc");
+  const [bgColor, setBgColor] = useState("#aabbcc");
 
   const contract = useContract({
     addressOrName: CONTRACT_ADDRESS,
@@ -23,24 +39,13 @@ const HaikuEdit = ({ signer, lines, onSubmit, tokenId }) => {
     signerOrProvider: signer,
   });
 
-  useEffect(() => {
-    setLineOne(lines[0]);
-    setLineTwo(lines[1]);
-    setLineThree(lines[2]);
-  }, []);
-
-  const validate = () => {
-    return true;
-  };
-
   const maybeUpdate = async (tokenId) => {
     try {
       setLoading(true);
-      const dataToSend = [lineOne, lineTwo, lineThree];
-      validate();
       const txn = await contract.updatePoem(
         ethers.BigNumber.from(tokenId),
-        dataToSend,
+        bgColor,
+        fontColor,
         { gasLimit: 900000 }
       );
       console.log("mining --- ", txn);
@@ -55,29 +60,12 @@ const HaikuEdit = ({ signer, lines, onSubmit, tokenId }) => {
 
   return (
     <>
-      <Form>
-        <Form.Control
-          id="inlineFormInputName"
-          placeholder="Line 1"
-          style={{ borderRadius: "10px", marginBottom: "4px" }}
-          value={lineOne}
-          onChange={(event) => setLineOne(event.target.value)}
-        />
-        <Form.Control
-          id="inlineFormInputName"
-          placeholder="Line 2"
-          style={{ borderRadius: "10px", marginBottom: "4px" }}
-          value={lineTwo}
-          onChange={(event) => setLineTwo(event.target.value)}
-        />
-        <Form.Control
-          id="inlineFormInputName"
-          placeholder="Line 2"
-          style={{ borderRadius: "10px", marginBottom: "4px" }}
-          value={lineThree}
-          onChange={(event) => setLineThree(event.target.value)}
-        />
-      </Form>
+      <EditColor
+        title="Background color"
+        color={bgColor}
+        setColor={setBgColor}
+      />
+      <EditColor title="Font color" color={fontColor} setColor={setFontColor} />
       <Button onClick={() => maybeUpdate(tokenId)}>
         {loading ? <div className="loading"></div> : "Update"}
       </Button>

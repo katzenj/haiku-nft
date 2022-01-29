@@ -7,7 +7,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "hardhat/console.sol";
 
 // [MIT License]
 /// @title Base64
@@ -145,7 +144,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
   }
 
   modifier isValidHexColor(bytes memory color) {
-    require(color.length < 8, "must be a valid hex color");
+    require(color.length < 8 && color.length > 3, "must be a valid hex color");
     bool valid = isValidColor(color);
     require(valid == true, "invalid hex color");
     _;
@@ -214,7 +213,7 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
     isValidHexColor(bytes(bgColor))
     isValidHexColor(bytes(fontColor))
   {
-    bytes memory finalSvg;
+    string memory json;
     {
       string memory colorSvgBase = string(
         abi.encodePacked(
@@ -226,19 +225,20 @@ contract Haiku is ERC721Enumerable, ERC721URIStorage, Ownable  {
         )
       );
       string memory svgText = tokenIdToHaikuSvg[tokenId];
-      finalSvg = abi.encodePacked(colorSvgBase, svgText,"</text></svg>");
+      bytes memory finalSvg = abi.encodePacked(colorSvgBase, svgText,"</text></svg>");
+
+      json = Base64.encode(
+        abi.encodePacked(
+          _getJsonBase(tokenId),
+          Base64.encode(finalSvg),
+          '"}'
+        )
+      );
     }
-    string memory json = Base64.encode(
-      abi.encodePacked(
-        _getJsonBase(tokenId),
-        Base64.encode(finalSvg),
-        '"}'
-      )
-    );
     string memory finalTokenUri = string(
       abi.encodePacked("data:application/json;base64,", json)
     );
-    console.log(finalTokenUri);
+
     _setTokenURI(tokenId, finalTokenUri);
     emit HaikuUpdated(msg.sender, block.timestamp, tokenId);
   }
