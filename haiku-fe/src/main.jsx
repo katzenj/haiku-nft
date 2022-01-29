@@ -6,7 +6,6 @@ import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 import { WalletLinkConnector } from "wagmi/connectors/walletLink";
 import { ethers, providers } from "ethers";
 
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
 import App from "./App";
 

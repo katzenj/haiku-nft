@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useContract } from "wagmi";
 import { ethers } from "ethers";
-import Card from "react-bootstrap/Card";
 
 import Button from "./Button";
 import HaikuEdit from "./HaikuEdit";
@@ -21,7 +20,7 @@ const NFTCard = ({ nftData, signer, unsetNft }) => {
       <div className="card">
         <img src={nftData.image} />
         <div className="card-body">
-          <h4 className="card-header">{nftData.name}</h4>
+          <h3 className="card-header">{nftData.name}</h3>
           <p>{nftData.description}</p>
           <HaikuEdit
             signer={signer}

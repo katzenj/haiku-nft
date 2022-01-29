@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useContract } from "wagmi";
-import { HexColorPicker } from "react-colorful";
+import { HexColorPicker, HexColorInput } from "react-colorful";
 
 import Button from "./Button";
 
@@ -23,7 +23,16 @@ const EditColor = ({ title, color, setColor }) => {
           <i className="far fa-edit"></i>
         </button>
       </p>
-      {editing ? <HexColorPicker color={color} onChange={setColor} /> : null}
+      {editing ? (
+        <div className="color-picker-container">
+          <div className="color-picker-thing">
+            <HexColorPicker color={color} onChange={setColor} />
+          </div>
+          <div className="color-picker-input">
+            <HexColorInput color={color} onChange={setColor} />
+          </div>
+        </div>
+      ) : null}
     </>
   );
 };

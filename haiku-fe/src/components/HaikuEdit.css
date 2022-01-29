@@ -7,3 +7,28 @@
 .edit-color {
   margin: 8px 0px;
 }
+
+.react-colorful {
+  /* because they set the width to 200 on the component - sad */
+  width: 100% !important;
+}
+
+.color-picker-container {
+  padding-bottom: 12px;
+  width: 100%;
+}
+
+.color-picker-thing {
+  padding-bottom: 4px;
+}
+
+.color-picker-input {
+  padding-bottom: 4px;
+  margin-right: 12px;
+}
+
+input {
+  border-radius: 4px;
+  padding: 4px;
+  width: 100%;
+}
